@@ -136,7 +136,10 @@ on fs
     copy /tmp/liblog.so /system/lib/liblog.so
     copy /tmp/libz.so /system/lib/libz.so
     copy /tmp/libstdc++.so /system/lib/libstdc++.so
-
+		
+    exec umount
+    
+    mount rfs /dev/block/stl9 /system check=no
     mount rfs /dev/block/stl9 /system ro remount
 
 # SEC_DMCRYPT for MC_CRYPT_ROOT before apply_disk_policy or apply_sec_devenc_init
@@ -393,6 +396,87 @@ on post-fs
     chown system input /sys/class/input/input9/wake
     chown system input /dev/i2c-12
 
+ #change permissions for modem 
+    chown radio system /sys/class/modemctl/xmm/control 
+    chown radio system /sys/class/net/svnet0/waketime
+    chown radio system /sys/class/net/svnet0/pdp/activate 
+    chown radio system /sys/class/net/svnet0/pdp/deactivate
+    chown radio system /sys/class/net/svnet0/pdp/suspend 
+    chown radio system /sys/class/net/svnet0/pdp/resume
+    #change permissions for USB
+    chown radio system /sys/class/sec/switch/usb_sel
+    chown radio system /sys/class/sec/switch/uart_sel
+    chown radio system /sys/class/sec/switch/usb_state
+    chown radio system /sys/class/sec/switch/disable_vbus
+ 
+    #change permissions for fuel gauge
+    chown radio system /sys/class/sec/fg_atcom_test/set_fuel_gauage_read
+    chown radio system /sys/class/sec/fg_atcom_test/set_fuel_gauage_reset
+ 
+    #change permissions for battery
+    chown radio system /sys/class/power_supply/battery/batt_vol
+    chown radio system /sys/class/power_supply/battery/batt_vol_adc
+    chown radio system /sys/class/power_supply/battery/batt_temp
+    chown radio system /sys/class/power_supply/battery/batt_temp_adc
+    chown radio system /sys/class/power_supply/battery/charging_source
+    chown radio system /sys/class/power_supply/battery/fg_soc
+    chown radio system /sys/class/power_supply/battery/reset_soc
+    chown radio system /sys/class/power_supply/battery/charging_mode_booting
+    chown radio system /sys/class/power_supply/battery/batt_temp_check
+    chown radio system /sys/class/power_supply/battery/batt_full_check
+    chown radio system /sys/class/power_supply/battery/batt_type
+
+#for jack control
+    chown radio system /sys/class/jack/jack_selector/select_jack
+
+#change permissions for touch
+    chown radio system /sys/class/sec/qt602240_noise_test/set_refer0
+    chown radio system /sys/class/sec/qt602240_noise_test/set_delta0
+    chown radio system /sys/class/sec/qt602240_noise_test/set_refer1
+    chown radio system /sys/class/sec/qt602240_noise_test/set_delta1
+    chown radio system /sys/class/sec/qt602240_noise_test/set_refer2
+    chown radio system /sys/class/sec/qt602240_noise_test/set_delta2
+    chown radio system /sys/class/sec/qt602240_noise_test/set_refer3
+    chown radio system /sys/class/sec/qt602240_noise_test/set_delta3
+    chown radio system /sys/class/sec/qt602240_noise_test/set_refer4
+    chown radio system /sys/class/sec/qt602240_noise_test/set_delta4
+    chown radio system /sys/class/sec/qt602240_noise_test/set_referminmax 
+    chown radio system /sys/class/sec/qt602240_noise_test/set_deltaminmax 
+    chown radio system /sys/class/sec/qt602240_noise_test/set_threshould 
+    chown radio system /sys/class/sec/qt602240_atcom_test/set_qt_update 
+    chown radio system /sys/class/sec/qt602240_atcom_test/set_qt_firm_version 
+    chown radio system /sys/class/sec/qt602240_atcom_test/set_qt_firm_status 
+    chown radio system /sys/class/sec/qt602240_atcom_test/set_qt_firm_version_read
+    chown radio system /sys/class/touch/switch/set_power
+    chown radio system /sys/class/touch/switch/set_acquisition
+    chown radio system /sys/class/touch/switch/set_touchscreen 
+    chown radio system /sys/class/touch/switch/set_keyarray 
+    chown radio system /sys/class/touch/switch/set_total
+    chown radio system /sys/class/touch/switch/set_write
+    chown radio system /sys/class/touch/switch/set_noise
+    chown radio system /sys/class/touch/switch/set_grip  
+    chown radio system /sys/class/touch/qt_stylus/config_mode
+
+ #change permissions for lcd
+    chown radio system /sys/class/lcd/s5p_lcd/lcd_power
+    chown radio radio /sys/class/gammaset/switch_gammaset/gammaset_file_cmd
+    chown radio radio /sys/class/aclset/switch_aclset/aclset_file_cmd
+    chown radio system /sys/class/sec/sec_lcd/lcdtype_file_cmd
+    chown radio radio /sys/class/mdnieset_ui/switch_mdnieset_ui/mdnieset_ui_file_cmd
+    chown radio radio /sys/class/mdnieset_outdoor/switch_mdnieset_outdoor/mdnieset_outdoor_file_cmd
+
+ #change permissions for touchkey
+    chown radio system /sys/class/misc/melfas_touchkey/touch_version
+    chown radio system /sys/class/misc/melfas_touchkey/touch_update
+    chown radio system /sys/class/misc/melfas_touchkey/brightness
+    chown radio system /sys/class/misc/melfas_touchkey/enable_disable
+    
+    chown radio system /sys/devices/platform/s3c-keypad/key_pressed
+    
+    chown radio system /sys/class/misc/level/control
+
+    chown radio system /sys/class/sec/switch/tethering
+
 on boot
 # basic network init
     ifup lo
@@ -406,12 +490,13 @@ on boot
 # killed by the kernel.  These are used in ActivityManagerService.
     setprop ro.FOREGROUND_APP_ADJ 0
     setprop ro.VISIBLE_APP_ADJ 1
-    setprop ro.PERCEPTIBLE_APP_ADJ 2
-    setprop ro.HEAVY_WEIGHT_APP_ADJ 3
-    setprop ro.SECONDARY_SERVER_ADJ 4
-    setprop ro.BACKUP_APP_ADJ 5
-    setprop ro.HOME_APP_ADJ 6
+    setprop ro.PERCEPTIBLE_APP_ADJ 1
+    setprop ro.HEAVY_WEIGHT_APP_ADJ 2
+    setprop ro.SECONDARY_SERVER_ADJ 2
+    setprop ro.BACKUP_APP_ADJ 2
+    setprop ro.HOME_APP_ADJ 4
     setprop ro.HIDDEN_APP_MIN_ADJ 7
+    setprop ro.CONTENT_PROVIDER_MEM 14
     setprop ro.EMPTY_APP_ADJ 15
 
 # to enable wifi
@@ -419,25 +504,26 @@ on boot
 
 # Define the memory thresholds at which the above process classes will
 # be killed.  These numbers are in pages (4k).
-    setprop ro.FOREGROUND_APP_MEM 2048
-    setprop ro.VISIBLE_APP_MEM 3072
+    setprop ro.FOREGROUND_APP_MEM 2560
+    setprop ro.VISIBLE_APP_MEM 4096
     setprop ro.PERCEPTIBLE_APP_MEM 4096
     setprop ro.HEAVY_WEIGHT_APP_MEM 4096
     setprop ro.SECONDARY_SERVER_MEM 6144
     setprop ro.BACKUP_APP_MEM 6144
     setprop ro.HOME_APP_MEM 6144
-    setprop ro.HIDDEN_APP_MEM 7168
-    setprop ro.EMPTY_APP_MEM 8192
+    setprop ro.HIDDEN_APP_MEM 10240
+    setprop ro.CONTENT_PROVIDER_MEM 11264
+    setprop ro.EMPTY_APP_MEM 12288
 
 # Write value must be consistent with the above properties.
 # Note that the driver only supports 6 slots, so we have combined some of
 # the classes into the same memory level; the associated processes of higher
 # classes will still be killed first.
-    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,7,15
+    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,7,14,15
 
     write /proc/sys/vm/overcommit_memory 1
     write /proc/sys/vm/min_free_order_shift 4
-    write /sys/module/lowmemorykiller/parameters/minfree 2048,3072,4096,6144,7168,8192
+    write /sys/module/lowmemorykiller/parameters/minfree 2560,4096,6144,10240,11264,12288
 
     # Set init its forked children's oom_adj.
     write /proc/1/oom_adj -16
@@ -714,3 +800,4 @@ service gpsd /system/vendor/bin/launch_gps.sh
     socket gps seqpacket 0660 gps system
     user gps
     group system inet
+
